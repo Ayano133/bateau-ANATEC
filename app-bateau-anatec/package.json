@@ -44,7 +44,8 @@
     "react-native-webview": "13.12.5",
     "expo-dev-client": "~5.0.11",
     "expo-sqlite": "~15.1.2",
-    "expo-network": "~7.0.5"
+    "expo-network": "~7.0.5",
+    "expo-location": "~18.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
