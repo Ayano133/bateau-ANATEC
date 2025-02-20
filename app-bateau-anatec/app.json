@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.appbateauanatec",
-      "config":{
+      "config": {
         "googleMapsApiKey": "AIzaSyBEIDB48_Q-2Gc024zifLwQutr9hYjLI1g"
       }
     },
@@ -37,7 +37,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
