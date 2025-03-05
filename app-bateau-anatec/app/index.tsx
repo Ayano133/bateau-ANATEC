@@ -34,7 +34,7 @@ const App = () => {
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setMarkers((prevMarkers) => {
-      if (prevMarkers.length < 5) {
+      if (prevMarkers.length < 2) {
         return [...prevMarkers, { latitude, longitude }];
       }
       return prevMarkers;
@@ -80,8 +80,8 @@ const App = () => {
           
           <Marker
             coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-            title="Home"
-            description="Je suis ici"
+            title="Mattéo"
+            description="HOME"
             pinColor='blue'
           />
           {markers.map((marker, index) => (
