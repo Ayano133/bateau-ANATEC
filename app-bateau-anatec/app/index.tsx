@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation, } from '@/app/location';
-import MapView from 'react-native-maps';
-import { View, Text } from 'react-native';
+import MapView,{Marker} from 'react-native-maps';
+import { View, Text, StyleSheet} from 'react-native';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
@@ -30,17 +30,46 @@ const App = () => {
   }, []);
 
   return (
-
     <View>
-      <Text>
+      <View style={styles.container}>
         {location ? (
-          <Text>Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}</Text>
-        ) : (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.001,
+            longitudeDelta: 0.001,
+          }}
+        >
+          <Marker
+            coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+            title="Home"
+            description="Je suis ici"
+            pinColor='blue'
+          />
+        </MapView>
+        ) : 
           <Text>Loading...</Text>
-        )}
-      </Text>
+        }
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    height: 752,
+    width: 400,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});
+
 
 export default App;

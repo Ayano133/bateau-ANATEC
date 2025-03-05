@@ -43,4 +43,4 @@ export const fetchLocations = async () : Promise<any[]> => {
     console.log(row.id, row.latitude, row.longitude);
   }
   return allRows;
-}
+};
