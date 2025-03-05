@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation, } from '@/app/location';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'; // Ensure PROVIDER_GOOGLE is imported
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
-  const [markers, setMarkers] = useState<{ latitude: number; longitude: number }[]>([]);
-  const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
+  const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
 
   useEffect(() => {
     // Initialiser la base de données
@@ -35,13 +35,13 @@ const App = () => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setMarkers((prevMarkers) => {
       if (prevMarkers.length < 2) {
-        return [...prevMarkers, { latitude, longitude }];
+        return [...prevMarkers, { latitude, longitude, title: `Position ${prevMarkers.length + 1}` }];
       }
       return prevMarkers;
     });
   };
 
-  const handleMarkerPress = (marker: { latitude: number; longitude: number }) => {
+  const handleMarkerPress = (marker: { latitude: number; longitude: number; title?: string }) => {
     setSelectedMarker(marker);
   };
 
@@ -68,7 +68,6 @@ const App = () => {
         {location ? (
           <MapView
             style={styles.map}
-            provider={PROVIDER_GOOGLE} // Ensure PROVIDER_GOOGLE is used
             initialRegion={{
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
@@ -89,7 +88,7 @@ const App = () => {
             <Marker
               key={index}
               coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              title={`Marker ${index + 1}`}
+              title={`Position ${index + 1}`}
               onPress={() => handleMarkerPress(marker)}
             />
           ))}
@@ -102,7 +101,7 @@ const App = () => {
         {selectedMarker && (
           <View style={styles.rectangle}>
             <View style={styles.rectangle_head}>
-              <Text style={styles.head_titre}>Titre</Text>
+              <Text style={styles.head_titre}>{selectedMarker.title}</Text>
               <TouchableOpacity style={styles.button_fermer} onPress={handleRemoveRectangle}>
                 <Text style={styles.button_fermer_texte}>Fermer</Text>
               </TouchableOpacity>
