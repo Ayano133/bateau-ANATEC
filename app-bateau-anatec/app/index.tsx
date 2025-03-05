@@ -49,6 +49,19 @@ const App = () => {
     setSelectedMarker(null);
   };
 
+  const handleRemoveMarker = () => {
+    if (selectedMarker) {
+      setMarkers((prevMarkers) =>
+        prevMarkers.filter(
+          (marker) =>
+            marker.latitude !== selectedMarker.latitude ||
+            marker.longitude !== selectedMarker.longitude
+        )
+      );
+      setSelectedMarker(null);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -102,7 +115,7 @@ const App = () => {
             </View>
 
             <View style={styles.rectangle_button}>
-              <TouchableOpacity style={styles.button_sup}>
+              <TouchableOpacity style={styles.button_sup} onPress={handleRemoveMarker}>
                 <Text style={styles.button_sup_texte}>Supprimer</Text>
               </TouchableOpacity>
 
