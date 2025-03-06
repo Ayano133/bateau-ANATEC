@@ -34,7 +34,7 @@ const App = () => {
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setMarkers((prevMarkers) => {
-      if (prevMarkers.length < 2) {
+      if (prevMarkers.length < 4) {
         return [...prevMarkers, { latitude, longitude, title: `Position ${prevMarkers.length + 1}` }];
       }
       return prevMarkers;
