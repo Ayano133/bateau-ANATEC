@@ -44,3 +44,5 @@ export const fetchLocations = async () : Promise<any[]> => {
   }
   return allRows;
 };
+
+export default initDatabase;

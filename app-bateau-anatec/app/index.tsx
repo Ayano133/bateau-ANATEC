@@ -1,34 +1,71 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
-import { requestLocationPermission, getCurrentLocation, } from '@/app/location';
+import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import WifiManager from 'react-native-wifi-reborn';
+import { requestOtherPhoneLocationPermission, getOtherPhoneLocation } from '@/app/otherPhoneLocation';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
   const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
+  const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const targetSSID = "haze";
 
   useEffect(() => {
     // Initialiser la base de données
     initDatabase();
 
-    // Récupérer la localisation et la sauvegarder
-    (async () => {
+    // Vérifier la connexion Wi-Fi et obtenir la position
+    const checkWifiAndGetLocation = async () => {
       try {
-        await requestLocationPermission();
-        const location = await getCurrentLocation();
-        setLocation(location);
-        await saveLocation(location.coords.latitude, location.coords.longitude);
+        console.log("WifiManager:", WifiManager);
+        if (WifiManager) { // Check if WifiManager is not null
+          // Check if getCurrentWifiSSID is a function before calling it
+          if (typeof WifiManager.getCurrentWifiSSID === 'function') {
+            const wifi = await WifiManager.getCurrentWifiSSID();
+            console.log("wifi", wifi);
 
-        // Récupérer et afficher les localisations sauvegardées
-        const savedLocations = await fetchLocations();
-        console.log('Saved locations:', savedLocations);
+            if (wifi === targetSSID) {
+              // Demander l'autorisation d'accéder à la position et obtenir la position
+              await requestLocationPermission();
+              const location = await getCurrentLocation();
+              setLocation(location);
+              await saveLocation(location.coords.latitude, location.coords.longitude);
+
+              // Récupérer et afficher les positions enregistrées
+              const savedLocations = await fetchLocations();
+              console.log('Positions enregistrées :', savedLocations);
+
+              // Demander la permission et obtenir la position de l'autre téléphone
+              const otherPhonePermission = await requestOtherPhoneLocationPermission();
+              if (otherPhonePermission) {
+                const otherPhoneLocation = await getOtherPhoneLocation();
+                setOtherPhoneLocation(otherPhoneLocation);
+                await saveLocation(otherPhoneLocation.latitude, otherPhoneLocation.longitude);
+              }
+            } else{
+              console.log("Pas connecté au SSID cible.");
+            }
+          } else {
+            console.log("getCurrentWifiSSID is not a function.");
+          }
+        } else {
+          console.log("WifiManager is null.");
+        }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Erreur lors de la récupération du SSID :', error);
       }
-    })();
+    };
+
+    checkWifiAndGetLocation(); // Vérification initiale
+
+    // Mettre en place un intervalle pour vérifier périodiquement la connexion Wi-Fi (facultatif)
+    const intervalId = setInterval(checkWifiAndGetLocation, 10000); // Vérifier toutes les 10 secondes
+
+    return () => clearInterval(intervalId); // Nettoyer l'intervalle lors du démontage
   }, []);
 
   const handleMapPress = (event: any) => {
@@ -92,10 +129,18 @@ const App = () => {
               onPress={() => handleMarkerPress(marker)}
             />
           ))}
+          {/* Afficher la position de l'autre téléphone */}
+          {otherPhoneLocation && (
+            <Marker
+              coordinate={otherPhoneLocation}
+              title="Autre Téléphone"
+              pinColor="green"
+            />
+          )}
         </MapView>
 
         ) : (
-          <Text>Loading...</Text>
+          <Text>Chargement...</Text>
         )}
 
         {selectedMarker && (
