@@ -9,7 +9,7 @@ export const initDatabase = async () => {
     // Activer les clés étrangères (optionnel)
     await db.execAsync('PRAGMA foreign_keys = ON;');
 
-    // Créer la table locations si elle n'existe pas
+    // Créer la table locations si elle n'existe pass
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS locations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -4,7 +4,7 @@ import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import WifiManager from 'react-native-wifi-reborn';
+import WifiManager from 'react-native-wifi-reborn'; 
 import { requestOtherPhoneLocationPermission, getOtherPhoneLocation } from '@/app/otherPhoneLocation';
 
 const App = () => {
@@ -13,6 +13,7 @@ const App = () => {
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const targetSSID = "haze";
+  const [apiLocation, setApiLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     // Initialiser la base de données
@@ -45,6 +46,8 @@ const App = () => {
                 const otherPhoneLocation = await getOtherPhoneLocation();
                 setOtherPhoneLocation(otherPhoneLocation);
                 await saveLocation(otherPhoneLocation.latitude, otherPhoneLocation.longitude);
+                // Envoyer la position à l'API
+                sendLocationToApi(otherPhoneLocation);
               }
             } else{
               console.log("Pas connecté au SSID cible.");
@@ -60,10 +63,39 @@ const App = () => {
       }
     };
 
+    const fetchLocationFromApi = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/location');
+        const data = await response.json();
+        setApiLocation(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la position depuis l\'API:', error);
+      }
+    };
+
+    const sendLocationToApi = async (location: { latitude: number; longitude: number }) => {
+      try {
+        await fetch('http://localhost:3001/location', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(location),
+        });
+        console.log('Position envoyée à l\'API avec succès.');
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi de la position à l\'API:', error);
+      }
+    };
+
     checkWifiAndGetLocation(); // Vérification initiale
+    fetchLocationFromApi();
 
     // Mettre en place un intervalle pour vérifier périodiquement la connexion Wi-Fi (facultatif)
-    const intervalId = setInterval(checkWifiAndGetLocation, 10000); // Vérifier toutes les 10 secondes
+    const intervalId = setInterval(() => {
+      checkWifiAndGetLocation();
+      fetchLocationFromApi();
+    }, 10000); // Vérifier toutes les 10 secondes
 
     return () => clearInterval(intervalId); // Nettoyer l'intervalle lors du démontage
   }, []);
@@ -135,6 +167,14 @@ const App = () => {
               coordinate={otherPhoneLocation}
               title="Autre Téléphone"
               pinColor="green"
+            />
+          )}
+          {/* Afficher la position de l'API */}
+          {apiLocation && (
+            <Marker
+              coordinate={apiLocation}
+              title="API Location"
+              pinColor="orange"
             />
           )}
         </MapView>
