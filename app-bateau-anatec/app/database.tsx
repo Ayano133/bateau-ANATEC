@@ -42,7 +42,7 @@ export const fetchLocations = async () : Promise<any[]> => {
   for (const row of allRows) {
     console.log(row.id, row.latitude, row.longitude);
   }
-  return allRows;
-};
+  return allRows; 
+}; 
 
 export default initDatabase;
