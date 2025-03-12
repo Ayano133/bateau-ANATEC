@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { requestOtherPhoneLocationPermission, getOtherPhoneLocation } from '@/app/otherPhoneLocation';
 
@@ -12,55 +12,59 @@ const App = () => {
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [apiLocation, setApiLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [otherPhonePermissionGranted, setOtherPhonePermissionGranted] = useState(false);
 
   useEffect(() => {
-    // Initialiser la base de données
     initDatabase();
 
-    // Vérifier la connexion Wi-Fi et obtenir la position
-    const checkWifiAndGetLocation = async () => {
+    const getLocationAndSendToApi = async () => {
       try {
-        // Demander l'autorisation d'accéder à la position et obtenir la position
         await requestLocationPermission();
-        const location = await getCurrentLocation();
-        setLocation(location);
-        await saveLocation(location.coords.latitude, location.coords.longitude);
+        const currentLocation = await getCurrentLocation();
+        setLocation(currentLocation);
+        await saveLocation(currentLocation.coords.latitude, currentLocation.coords.longitude);
 
-        // Récupérer et afficher les positions enregistrées
         const savedLocations = await fetchLocations();
         console.log('Positions enregistrées :', savedLocations);
 
-        // Demander la permission et obtenir la position de l'autre téléphone
-        const otherPhonePermission = await requestOtherPhoneLocationPermission();
-        if (otherPhonePermission) {
-          const otherPhoneLocation = await getOtherPhoneLocation();
-          setOtherPhoneLocation(otherPhoneLocation);
-          await saveLocation(otherPhoneLocation.latitude, otherPhoneLocation.longitude);
-          // Envoyer la position à l'API
-          sendLocationToApi(otherPhoneLocation);
+        if (otherPhonePermissionGranted) {
+          const otherLocation = await getOtherPhoneLocation();
+          setOtherPhoneLocation(otherLocation);
+          await saveLocation(otherLocation.latitude, otherLocation.longitude);
+          sendLocationToApi(otherLocation);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du SSID :', error);
+        console.error('Error fetching location:', error);
       }
     };
 
     const fetchLocationFromApi = async () => {
       try {
-        const response = await fetch('http://10.24.22.191:3001/location');
+        const response = await fetch('http://10.24.22.191:3000/location');
+        console.log('API response:', response);
         if (!response.ok) {
-          console.error('Erreur lors de la récupération de la position depuis l\'API: Response status:', response.status);
+          console.error('Error fetching API location. Status:', response.status);
           return;
         }
         const data = await response.json();
+        console.log('API location data:', data);
         setApiLocation(data);
       } catch (error) {
-        console.error('Erreur lors de la récupération de la position depuis l\'API:', error);
+        console.error('Error fetching API location:', error);
       }
     };
 
     const sendLocationToApi = async (location: { latitude: number; longitude: number }) => {
       try {
-        const response = await fetch('http://10.24.22.191:3001/location', {
+        // Check API availability before sending
+        const apiStatus = await checkApiStatus();
+        if (!apiStatus) {
+          console.error('API is not reachable. Location will be stored locally.');
+          saveLocationLocally(location); // Store location locally
+          return;
+        }
+
+        const response = await fetch('http://10.24.22.191:3000/location', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,35 +72,52 @@ const App = () => {
           body: JSON.stringify(location),
         });
         if (!response.ok) {
-          console.error('Erreur lors de l\'envoi de la position à l\'API: Response status:', response.status);
+          console.error('Error sending location to API. Status:', response.status);
           return;
         }
-        console.log('Position envoyée à l\'API avec succès.');
-      } catch (error) {
-        console.error('Erreur lors de l\'envoi de la position à l\'API:', error);
+        console.log('Location sent to API successfully.');
+      } catch (error: any) {
+        console.error('Error sending location to API:', error);
+        console.log('Retrying in 5 seconds...');
+        setTimeout(() => {
+          sendLocationToApi(location);
+        }, 5000);
       }
     };
 
-    checkWifiAndGetLocation(); // Vérification initiale
+    const checkApiStatus = async () => {
+      try {
+        const response = await fetch('http://10.24.22.191:3000/location', { method: 'HEAD' });
+        return response.ok;
+      } catch (error) {
+        console.error('API status check failed:', error);
+        return false;
+      }
+    };
+
+    const saveLocationLocally = async (location: { latitude: number; longitude: number }) => {
+      // Implement local storage mechanism here (e.g., using AsyncStorage)
+      console.log('Location saved locally:', location);
+    };
+
+    const requestOtherPhonePerm = async () => {
+      const permission = await requestOtherPhoneLocationPermission();
+      setOtherPhonePermissionGranted(permission);
+    };
+
+    requestOtherPhonePerm();
+    getLocationAndSendToApi();
     fetchLocationFromApi();
 
-    // Mettre en place un intervalle pour vérifier périodiquement la connexion Wi-Fi (facultatif)
-    const intervalId = setInterval(() => {
-      checkWifiAndGetLocation();
-      fetchLocationFromApi();
-    }, 10000); // Vérifier toutes les 10 secondes
-
-    return () => clearInterval(intervalId); // Nettoyer l'intervalle lors du démontage
-  }, []);
+  }, [otherPhonePermissionGranted]);
 
   const handleMapPress = (event: any) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setMarkers((prevMarkers) => {
-      if (prevMarkers.length < 4) {
-        return [...prevMarkers, { latitude, longitude, title: `Position ${prevMarkers.length + 1}` }];
-      }
-      return prevMarkers;
-    });
+    const { coordinate } = event.nativeEvent;
+    setMarkers(prevMarkers =>
+      prevMarkers.length < 4
+        ? [...prevMarkers, { latitude: coordinate.latitude, longitude: coordinate.longitude, title: `Position ${prevMarkers.length + 1}` }]
+        : prevMarkers
+    );
   };
 
   const handleMarkerPress = (marker: { latitude: number; longitude: number; title?: string }) => {
@@ -109,9 +130,9 @@ const App = () => {
 
   const handleRemoveMarker = () => {
     if (selectedMarker) {
-      setMarkers((prevMarkers) =>
+      setMarkers(prevMarkers =>
         prevMarkers.filter(
-          (marker) =>
+          marker =>
             marker.latitude !== selectedMarker.latitude ||
             marker.longitude !== selectedMarker.longitude
         )
@@ -132,42 +153,38 @@ const App = () => {
               latitudeDelta: 0.001,
               longitudeDelta: 0.001,
             }}
-            onPress={handleMapPress} // Ajouter l'événement onPress
-            // mapType="satellite"
+            onPress={handleMapPress}
           >
-          
-          <Marker
-            coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-            title="Mattéo"
-            description="HOME"
-            pinColor='blue'
-          />
-          {markers.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              title={`Position ${index + 1}`}
-              onPress={() => handleMarkerPress(marker)}
-            />
-          ))}
-          {/* Afficher la position de l'autre téléphone */}
-          {otherPhoneLocation && (
-            <Marker
-              coordinate={otherPhoneLocation}
-              title="Lucas"
-              pinColor="green"
-            />
-          )}
-          {/* Afficher la position de l'API */}
-          {apiLocation && (
-            <Marker
-              coordinate={apiLocation}
-              title="API Location"
-              pinColor="orange"
-            />
-          )}
-        </MapView>
 
+            <Marker
+              coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+              title="Mattéo"
+              description="HOME"
+              pinColor='blue'
+            />
+            {markers.map((marker, index) => (
+              <Marker
+                key={index}
+                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                title={`Position ${index + 1}`}
+                onPress={() => handleMarkerPress(marker)}
+              />
+            ))}
+            {otherPhoneLocation && (
+              <Marker
+                coordinate={otherPhoneLocation}
+                title="Lucas"
+                pinColor="green"
+              />
+            )}
+            {apiLocation && (
+              <Marker
+                coordinate={apiLocation}
+                title="API Location"
+                pinColor="orange"
+              />
+            )}
+          </MapView>
         ) : (
           <Text>Chargement...</Text>
         )}

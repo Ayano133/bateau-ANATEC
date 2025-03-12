@@ -5,7 +5,7 @@ export const requestOtherPhoneLocationPermission = async () => {
   return new Promise<boolean>((resolve) => {
     Alert.alert(
       "Permission Request",
-      "Est ce que je peux accéder à vos coordonées GPS ?",
+      "Autorisation d'accès à la localisation",
       [
         {
           text: "No",
@@ -20,11 +20,6 @@ export const requestOtherPhoneLocationPermission = async () => {
 };
 
 export const getOtherPhoneLocation = async () => {
-  let { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') {
-    throw new Error('Permission to access location was denied');
-  }
-
   let location = await Location.getCurrentPositionAsync({});
   return {
     latitude: location.coords.latitude,
@@ -32,7 +27,4 @@ export const getOtherPhoneLocation = async () => {
   };
 };
 
-export default {
-  requestOtherPhoneLocationPermission,
-  getOtherPhoneLocation,
-};
+export default { requestOtherPhoneLocationPermission, getOtherPhoneLocation };
