@@ -5,7 +5,7 @@ export const requestOtherPhoneLocationPermission = async () => {
   return new Promise<boolean>((resolve) => {
     Alert.alert(
       "Permission Request",
-      "Do you allow this app to access your GPS coordinates?",
+      "Est ce que je peux accéder à vos coordonées GPS ?",
       [
         {
           text: "No",

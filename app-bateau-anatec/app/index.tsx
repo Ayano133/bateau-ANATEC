@@ -4,7 +4,6 @@ import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import WifiManager from 'react-native-wifi-reborn'; 
 import { requestOtherPhoneLocationPermission, getOtherPhoneLocation } from '@/app/otherPhoneLocation';
 
 const App = () => {
@@ -12,7 +11,6 @@ const App = () => {
   const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const targetSSID = "haze";
   const [apiLocation, setApiLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
@@ -22,41 +20,24 @@ const App = () => {
     // Vérifier la connexion Wi-Fi et obtenir la position
     const checkWifiAndGetLocation = async () => {
       try {
-        console.log("WifiManager:", WifiManager);
-        if (WifiManager) { // Check if WifiManager is not null
-          // Check if getCurrentWifiSSID is a function before calling it
-          if (typeof WifiManager.getCurrentWifiSSID === 'function') {
-            const wifi = await WifiManager.getCurrentWifiSSID();
-            console.log("wifi", wifi);
+        // Demander l'autorisation d'accéder à la position et obtenir la position
+        await requestLocationPermission();
+        const location = await getCurrentLocation();
+        setLocation(location);
+        await saveLocation(location.coords.latitude, location.coords.longitude);
 
-            if (wifi === targetSSID) {
-              // Demander l'autorisation d'accéder à la position et obtenir la position
-              await requestLocationPermission();
-              const location = await getCurrentLocation();
-              setLocation(location);
-              await saveLocation(location.coords.latitude, location.coords.longitude);
+        // Récupérer et afficher les positions enregistrées
+        const savedLocations = await fetchLocations();
+        console.log('Positions enregistrées :', savedLocations);
 
-              // Récupérer et afficher les positions enregistrées
-              const savedLocations = await fetchLocations();
-              console.log('Positions enregistrées :', savedLocations);
-
-              // Demander la permission et obtenir la position de l'autre téléphone
-              const otherPhonePermission = await requestOtherPhoneLocationPermission();
-              if (otherPhonePermission) {
-                const otherPhoneLocation = await getOtherPhoneLocation();
-                setOtherPhoneLocation(otherPhoneLocation);
-                await saveLocation(otherPhoneLocation.latitude, otherPhoneLocation.longitude);
-                // Envoyer la position à l'API
-                sendLocationToApi(otherPhoneLocation);
-              }
-            } else{
-              console.log("Pas connecté au SSID cible.");
-            }
-          } else {
-            console.log("getCurrentWifiSSID is not a function.");
-          }
-        } else {
-          console.log("WifiManager is null.");
+        // Demander la permission et obtenir la position de l'autre téléphone
+        const otherPhonePermission = await requestOtherPhoneLocationPermission();
+        if (otherPhonePermission) {
+          const otherPhoneLocation = await getOtherPhoneLocation();
+          setOtherPhoneLocation(otherPhoneLocation);
+          await saveLocation(otherPhoneLocation.latitude, otherPhoneLocation.longitude);
+          // Envoyer la position à l'API
+          sendLocationToApi(otherPhoneLocation);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du SSID :', error);
@@ -65,7 +46,11 @@ const App = () => {
 
     const fetchLocationFromApi = async () => {
       try {
-        const response = await fetch('http://localhost:3001/location');
+        const response = await fetch('http://10.24.22.191:3001/location');
+        if (!response.ok) {
+          console.error('Erreur lors de la récupération de la position depuis l\'API: Response status:', response.status);
+          return;
+        }
         const data = await response.json();
         setApiLocation(data);
       } catch (error) {
@@ -75,13 +60,17 @@ const App = () => {
 
     const sendLocationToApi = async (location: { latitude: number; longitude: number }) => {
       try {
-        await fetch('http://localhost:3001/location', {
+        const response = await fetch('http://10.24.22.191:3001/location', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(location),
         });
+        if (!response.ok) {
+          console.error('Erreur lors de l\'envoi de la position à l\'API: Response status:', response.status);
+          return;
+        }
         console.log('Position envoyée à l\'API avec succès.');
       } catch (error) {
         console.error('Erreur lors de l\'envoi de la position à l\'API:', error);
@@ -165,7 +154,7 @@ const App = () => {
           {otherPhoneLocation && (
             <Marker
               coordinate={otherPhoneLocation}
-              title="Autre Téléphone"
+              title="Lucas"
               pinColor="green"
             />
           )}
