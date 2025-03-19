@@ -7,3 +7,6 @@ app.get("/post", (req, res) => {
 });
 
 app.listen(port, () => console.log(`Serveur a démarré au port` + port));
+
+// Récupérer les coordonnées GPS de l'autre téléphone
+
