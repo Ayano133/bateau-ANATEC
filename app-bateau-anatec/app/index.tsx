@@ -1,34 +1,57 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
-import { requestLocationPermission, getCurrentLocation, } from '@/app/location';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { requestLocationPermission, getCurrentLocation } from '@/app/location';
+import MapView, { Marker } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
   const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
+  const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
-    // Initialiser la base de données
     initDatabase();
 
-    // Récupérer la localisation et la sauvegarder
-    (async () => {
+    const getLocationAndFetchOtherPhoneLocation = async () => {
       try {
         await requestLocationPermission();
-        const location = await getCurrentLocation();
-        setLocation(location);
-        await saveLocation(location.coords.latitude, location.coords.longitude);
+        const currentLocation = await getCurrentLocation();
+        setLocation(currentLocation);
+        await saveLocation(currentLocation.coords.latitude, currentLocation.coords.longitude);
 
-        // Récupérer et afficher les localisations sauvegardées
         const savedLocations = await fetchLocations();
-        console.log('Saved locations:', savedLocations);
+        console.log('Positions enregistrées:', savedLocations);
+
+        await fetchOtherPhoneLocation(); // Fetch the other phone's location
+
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Erreur:', error);
       }
-    })();
+    };
+
+    const fetchOtherPhoneLocation = async () => {
+      try {
+        const response = await fetch('http://10.119.255.18:3001/location'); // Replace with your server's IP
+        if (response.ok) {
+          const data = await response.json();
+          setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
+          console.log('Localisation de l\'autre téléphone:', data);
+        } else {
+          console.log('Localisation de l\'autre téléphone introuvable ou erreur lors de la récupération.');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la localisation de l\'autre téléphone:', error);
+      }
+    };
+
+    getLocationAndFetchOtherPhoneLocation();
+
+    // Fetch the other phone's location every 5 seconds
+    const intervalId = setInterval(fetchOtherPhoneLocation, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleMapPress = (event: any) => {
@@ -74,28 +97,33 @@ const App = () => {
               latitudeDelta: 0.001,
               longitudeDelta: 0.001,
             }}
-            onPress={handleMapPress} // Ajouter l'événement onPress
-            // mapType="satellite"
+            onPress={handleMapPress}
           >
-          
-          <Marker
-            coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-            title="Mattéo"
-            description="HOME"
-            pinColor='blue'
-          />
-          {markers.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              title={`Position ${index + 1}`}
-              onPress={() => handleMarkerPress(marker)}
-            />
-          ))}
-        </MapView>
 
+            <Marker
+              coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+              title="Mattéo"
+              description="HOME"
+              pinColor='blue'
+            />
+            {markers.map((marker, index) => (
+              <Marker
+                key={index}
+                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                title={`Position ${index + 1}`}
+                onPress={() => handleMarkerPress(marker)}
+              />
+            ))}
+            {otherPhoneLocation && (
+              <Marker
+                coordinate={{ latitude: otherPhoneLocation.latitude, longitude: otherPhoneLocation.longitude }}
+                title="Autre Téléphone"
+                pinColor="green"
+              />
+            )}
+          </MapView>
         ) : (
-          <Text>Loading...</Text>
+          <Text>Chargement...</Text>
         )}
 
         {selectedMarker && (
@@ -153,7 +181,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  rectangle_head:{
+  rectangle_head: {
     padding: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -161,20 +189,20 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  head_titre:{
+  head_titre: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
   },
 
-  button_fermer:{
+  button_fermer: {
     backgroundColor: 'skyblue',
     padding: 10,
     borderRadius: 50,
     width: 90,
   },
 
-  button_fermer_texte:{
+  button_fermer_texte: {
     fontSize: 15,
     fontWeight: 'bold',
     color: 'white',
@@ -186,14 +214,14 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
 
-  text_titre_gps:{
+  text_titre_gps: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     textDecorationLine: 'underline',
   },
 
-  coordonnées:{
+  coordonnées: {
     fontSize: 15,
     color: 'white',
     fontWeight: 'bold',
@@ -207,25 +235,25 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
-  button_sup:{
+  button_sup: {
     backgroundColor: 'skyblue',
     padding: 8,
     borderRadius: 50,
   },
 
-  button_sup_texte:{
+  button_sup_texte: {
     fontSize: 15,
     fontWeight: 'bold',
     color: 'white',
   },
 
-  button_ALLER:{
+  button_ALLER: {
     backgroundColor: 'white',
     padding: 8,
     borderRadius: 50,
   },
 
-  button_ALLER_texte:{
+  button_ALLER_texte: {
     fontSize: 15,
     fontWeight: 'bold',
     color: 'skyblue',
