@@ -119,6 +119,7 @@ const App = () => {
                 coordinate={{ latitude: otherPhoneLocation.latitude, longitude: otherPhoneLocation.longitude }}
                 title="Lucas"
                 pinColor="green"
+                description={`Latitude: ${otherPhoneLocation.latitude}, Longitude: ${otherPhoneLocation.longitude}`}
               />
             )}
           </MapView>
