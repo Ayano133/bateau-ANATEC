@@ -117,7 +117,7 @@ const App = () => {
             {otherPhoneLocation && (
               <Marker
                 coordinate={{ latitude: otherPhoneLocation.latitude, longitude: otherPhoneLocation.longitude }}
-                title="Autre Téléphone"
+                title="Lucas"
                 pinColor="green"
               />
             )}
