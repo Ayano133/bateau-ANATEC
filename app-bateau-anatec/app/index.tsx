@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const App = () => {
@@ -97,6 +97,7 @@ const App = () => {
               latitudeDelta: 0.001,
               longitudeDelta: 0.001,
             }}
+            provider={PROVIDER_GOOGLE}
             onPress={handleMapPress}
           >
 
