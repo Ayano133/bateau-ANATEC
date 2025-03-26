@@ -33,7 +33,7 @@ const App = () => {
 
     const fetchOtherPhoneLocation = async () => {
       try {
-        const response = await fetch('http://10.119.255.18:3001/location'); // Replace with your server's IP
+        const response = await fetch('http://10.57.71.18:3001/location'); // Replace with your server's IP
         if (response.ok) {
           const data = await response.json();
           setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
