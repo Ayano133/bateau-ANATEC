@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
@@ -31,21 +31,6 @@ const App = () => {
       }
     };
 
-    const fetchOtherPhoneLocation = async () => {
-      try {
-        const response = await fetch('http://10.57.71.18:3001/location'); // Replace with your server's IP
-        if (response.ok) {
-          const data = await response.json();
-          setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
-          console.log('Localisation de l\'autre téléphone:', data);
-        } else {
-          console.log('Localisation de l\'autre téléphone introuvable ou erreur lors de la récupération.');
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération de la localisation de l\'autre téléphone:', error);
-      }
-    };
-
     getLocationAndFetchOtherPhoneLocation();
 
     // Fetch the other phone's location every 5 seconds
@@ -53,6 +38,21 @@ const App = () => {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  const fetchOtherPhoneLocation = async () => {
+    try {
+      const response = await fetch('http://10.57.71.18:3001/location'); // Replace with your server's IP
+      if (response.ok) {
+        const data = await response.json();
+        setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
+        console.log('Localisation de l\'autre téléphone:', data);
+      } else {  
+        console.log('Localisation de l\'autre téléphone introuvable ou erreur lors de la récupération.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de la localisation de l\'autre téléphone:', error);
+    }
+  };
 
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -85,8 +85,37 @@ const App = () => {
     }
   };
 
+  const handleGoToPosition = async () => {
+    if (selectedMarker) {
+      try {
+        const response = await fetch('http://10.57.71.18:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            latitude: selectedMarker.latitude,
+            longitude: selectedMarker.longitude,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Position du marker envoyée au serveur avec succès !');
+          await fetchOtherPhoneLocation(); // Fetch the other phone's location immediately
+        } else {
+          console.error('Échec de l\'envoi de la position du marker au serveur.');
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi de la position du marker au serveur:', error);
+      }
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
+
+      <StatusBar hidden={true} />
+      
       <View style={styles.container}>
         {location ? (
           <MapView
@@ -97,7 +126,7 @@ const App = () => {
               latitudeDelta: 0.001,
               longitudeDelta: 0.001,
             }}
-            provider={PROVIDER_GOOGLE}
+            // provider={PROVIDER_GOOGLE}
             onPress={handleMapPress}
           >
 
@@ -149,7 +178,7 @@ const App = () => {
                 <Text style={styles.button_sup_texte}>Supprimer</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button_ALLER}>
+              <TouchableOpacity style={styles.button_ALLER} onPress={handleGoToPosition}>
                 <Text style={styles.button_ALLER_texte}>Aller à la position</Text>
               </TouchableOpacity>
 
