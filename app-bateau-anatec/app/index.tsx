@@ -113,9 +113,6 @@ const App = () => {
 
   return (
     <View style={{ flex: 1 }}>
-
-      <StatusBar hidden={true} />
-      
       <View style={styles.container}>
         {location ? (
           <MapView
