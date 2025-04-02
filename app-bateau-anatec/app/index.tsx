@@ -1,47 +1,49 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
   const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
     initDatabase();
 
-    const getLocationAndFetchOtherPhoneLocation = async () => {
-      try {
-        await requestLocationPermission();
-        const currentLocation = await getCurrentLocation();
-        setLocation(currentLocation);
-        await saveLocation(currentLocation.coords.latitude, currentLocation.coords.longitude);
+    initLocation();
 
-        const savedLocations = await fetchLocations();
-        console.log('Positions enregistrées:', savedLocations);
-
-        await fetchOtherPhoneLocation(); // Fetch the other phone's location
-
-      } catch (error) {
-        console.error('Erreur:', error);
-      }
-    };
-
-    getLocationAndFetchOtherPhoneLocation();
-
-    // Fetch the other phone's location every 5 seconds
-    const intervalId = setInterval(fetchOtherPhoneLocation, 5000);
+    fetchOtherPhoneLocation();// Fetch the other phone's location // enlever le await
+     
+    const intervalId = setInterval(fetchOtherPhoneLocation, 5000);// Fetch the other phone's location every 5 seconds
 
     return () => clearInterval(intervalId);
   }, []);
 
+  const initLocation = async () => {
+    try {
+      await requestLocationPermission();
+      const currentLocation = await getCurrentLocation();
+      setLocation(currentLocation);
+      await saveLocation(currentLocation.coords.latitude, currentLocation.coords.longitude);// enlever le await
+
+      const savedLocations = await fetchLocations();
+      console.log('Positions enregistrées:', savedLocations);
+
+      
+
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
   const fetchOtherPhoneLocation = async () => {
     try {
-      const response = await fetch('http://10.57.71.18:3001/location'); // Replace with your server's IP
+      const response = await fetch('http://10.165.209.18:3001/location'); // Replace with your server's IP
       if (response.ok) {
         const data = await response.json();
         setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
@@ -88,7 +90,7 @@ const App = () => {
   const handleGoToPosition = async () => {
     if (selectedMarker) {
       try {
-        const response = await fetch('http://10.57.71.18:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+        const response = await fetch('http://10.165.209.18:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -108,6 +110,17 @@ const App = () => {
       } catch (error) {
         console.error('Erreur lors de l\'envoi de la position du marker au serveur:', error);
       }
+    }
+  };
+
+  const centerMapOnLocation = () => {
+    if (location?.coords && mapRef.current) { // Use optional chaining
+      mapRef.current.animateToRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.001,
+        longitudeDelta: 0.001,
+      }, 1000); // 1000ms animation duration
     }
   };
 
@@ -153,6 +166,10 @@ const App = () => {
         ) : (
           <Text>Chargement...</Text>
         )}
+
+        <TouchableOpacity style={styles.button_centrer} onPress={centerMapOnLocation}>
+          <Image source={require('@/images/Maps-Center-Direction-icon.png')} style={{ width: 20, height: 20,}} />
+        </TouchableOpacity>
 
         {selectedMarker && (
           <View style={styles.rectangle}>
@@ -285,6 +302,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: 'skyblue',
+  },
+
+  button_centrer: {
+    position: 'absolute',
+    top: '3%',
+    right: '2%',
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 50,
   },
 });
 
