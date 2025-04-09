@@ -45,9 +45,16 @@ const App = () => {
       const response = await fetch('http://172.20.10.2:3001/location'); // Replace with your server's IP
       if (response.ok) {
         const data = await response.json();
-        setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
-        console.log('Localisation de l\'autre téléphone:', data);
-      } else {  
+        const newLocation = { latitude: data.latitude, longitude: data.longitude };
+
+        // Compare the new location with the previous location
+        if (!otherPhoneLocation || newLocation.latitude !== otherPhoneLocation.latitude || newLocation.longitude !== otherPhoneLocation.longitude) {
+          setOtherPhoneLocation(newLocation);
+          console.log('Localisation de l\'autre téléphone:', data);
+        } else {
+          console.log('La localisation de l\'autre téléphone n\'a pas changé.');
+        }
+      } else {
         console.log('Localisation de l\'autre téléphone introuvable ou erreur lors de la récupération.');
       }
     } catch (error) {
