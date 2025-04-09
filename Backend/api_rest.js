@@ -56,6 +56,28 @@ app.get("/location", (req, res) => {
   }
 });
 
+app.post("/airdrop-appat", (req, res) => {
+  const { message } = req.body;
+
+  if (message === 'Lache les appats') {
+    console.log("Message reçu: Lache les appats");
+    appatMessage = message;
+    // Gérer l'action de "Lache les appats" ici, par exemple, envoyer une notification à l'autre téléphone
+    res.status(200).json({ message: "Message 'Lache les appats' reçu avec succès" });
+  } else {
+    res.status(400).json({ error: "Message incorrect" });
+  }
+});
+
+app.get("/airdrop-appat", (req, res) => {
+  if (appatMessage) {
+    res.status(200).json({ message: appatMessage });
+    appatMessage = null; // Clear the message after sending it
+  } else {
+    res.status(404).json({ message: "Aucun message d'appât disponible" });
+  }
+});
+
 app.listen(port, () => console.log(`Serveur démarré sur le port ${port}`));
 
 

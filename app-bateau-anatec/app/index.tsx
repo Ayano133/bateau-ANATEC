@@ -111,16 +111,15 @@ const App = () => {
       }
     }
   };
-
   const AirdropAppat = async () => {
       try {
-        const response = await fetch('http://172.20.10.2:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+        const response = await fetch('http://172.20.10.2:3001/airdrop-appat', { // Remplace avec l'adresse IP de ton serveur
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            // alert('Lache les appats');
+            message: 'Lache les appats'
           }),
         });
 
@@ -135,6 +134,9 @@ const App = () => {
   }
   };
 
+  const handleRemoveAllMarkers = () => {
+    setMarkers([]);
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -202,6 +204,10 @@ const App = () => {
 
         <TouchableOpacity style={styles.button_appats} onPress={AirdropAppat} >
           <Image source={require('@/images/fish.png')} style={{ width: 35, height: 35,}} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button_remove_all_markers} onPress={handleRemoveAllMarkers} >
+          <Image source={require('@/images/markers sup.png')} style={{ width: 35, height: 35,}} />
         </TouchableOpacity>
 
         {selectedMarker && (
@@ -350,6 +356,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '1%',
     left: '17%',
+    backgroundColor: 'rgba(192, 248, 250, 1)',
+    padding: 10,
+    borderRadius: 50,
+  },
+
+  button_remove_all_markers: {
+    position: 'absolute',
+    top: '1%',
+    left: '33%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
     borderRadius: 50,
