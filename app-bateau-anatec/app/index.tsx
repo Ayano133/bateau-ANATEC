@@ -42,7 +42,7 @@ const App = () => {
 
   const fetchOtherPhoneLocation = async () => {
     try {
-      const response = await fetch('http://10.165.209.18:3001/location'); // Replace with your server's IP
+      const response = await fetch('http://172.20.10.2:3001/location'); // Replace with your server's IP
       if (response.ok) {
         const data = await response.json();
         setOtherPhoneLocation({ latitude: data.latitude, longitude: data.longitude });
@@ -89,7 +89,7 @@ const App = () => {
   const handleGoToPosition = async () => {
     if (selectedMarker) {
       try {
-        const response = await fetch('http://10.165.209.18:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+        const response = await fetch('http://172.20.10.2:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -113,8 +113,28 @@ const App = () => {
   };
 
   const AirdropAppat = async () => {
-    alert("Lacher les appats");
+      try {
+        const response = await fetch('http://172.20.10.2:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            // alert('Lache les appats');
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Alert envoyée au serveur avec succès !');
+          await fetchOtherPhoneLocation(); // Fetch the other phone's location immediately
+        } else {
+          console.error('Échec de l\'envoi de l\'alert au serveur.');
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'alert au serveur:', error); 
+  }
   };
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -320,7 +340,7 @@ const styles = StyleSheet.create({
   button_centrer: {
     position: 'absolute',
     top: '1%',
-    right: '1.5%',
+    left: '1.5%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
     borderRadius: 50,
@@ -329,7 +349,7 @@ const styles = StyleSheet.create({
   button_appats: {
     position: 'absolute',
     top: '1%',
-    right: '17%',
+    left: '17%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
     borderRadius: 50,
