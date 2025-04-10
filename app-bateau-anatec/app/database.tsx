@@ -9,7 +9,7 @@ export const initDatabase = async () => {
     // Activer les clés étrangères (optionnel)
     await db.execAsync('PRAGMA foreign_keys = ON;');
 
-    // Créer la table locations si elle n'existe pas
+    // Créer la table locations si elle n'existe pass
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS locations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,5 +42,7 @@ export const fetchLocations = async () : Promise<any[]> => {
   for (const row of allRows) {
     console.log(row.id, row.latitude, row.longitude);
   }
-  return allRows;
-};
+  return allRows; 
+}; 
+
+export default initDatabase;
