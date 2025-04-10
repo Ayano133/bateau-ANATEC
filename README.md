@@ -1,7 +1,7 @@
 ## Binome :
 ```
-- PEREIRA DA SILVA RODRIGUES Mattéo
-- RENTE--PINTO Lucas
+- PEREIRA DA SILVA RODRIGUES Mattéo (Github : Ayano133)
+- RENTE--PINTO Lucas (Github : 
 ```
 
 # <ins>Compte rendu:</ins>
