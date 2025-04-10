@@ -12,6 +12,7 @@ const App = () => {
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const mapRef = useRef<MapView>(null);
+  const previousLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     initDatabase();
@@ -48,11 +49,17 @@ const App = () => {
         const newLocation = { latitude: data.latitude, longitude: data.longitude };
 
         // Compare the new location with the previous location
-        if (!otherPhoneLocation || newLocation.latitude !== otherPhoneLocation.latitude || newLocation.longitude !== otherPhoneLocation.longitude) {
+        const tolerance = 0.000001; // Define a tolerance value
+        const previousLocation = previousLocationRef.current;
+
+        if (!previousLocation || 
+            Math.abs(newLocation.latitude - previousLocation.latitude) > tolerance || 
+            Math.abs(newLocation.longitude - previousLocation.longitude) > tolerance) {
           setOtherPhoneLocation(newLocation);
+          previousLocationRef.current = newLocation; // Update the ref with the new location
           console.log('Localisation de l\'autre téléphone:', data);
         } else {
-          console.log('La localisation de l\'autre téléphone n\'a pas changé.');
+          
         }
       } else {
         console.log('Localisation de l\'autre téléphone introuvable ou erreur lors de la récupération.');
