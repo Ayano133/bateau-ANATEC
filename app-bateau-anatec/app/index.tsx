@@ -1,4 +1,5 @@
 "use client"
+import { Stack, useNavigation } from 'expo-router';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
@@ -13,6 +14,7 @@ const App = () => {
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const mapRef = useRef<MapView>(null);
   const previousLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     initDatabase();
@@ -23,8 +25,11 @@ const App = () => {
      
     const intervalId = setInterval(fetchOtherPhoneLocation, 5000);// Fetch the other phone's location every 5 seconds
 
+    navigation.setOptions({ headerShown: false });
+
     return () => clearInterval(intervalId);
-  }, []);
+
+  }, [navigation]);
 
   const initLocation = async () => {
     try {
@@ -359,7 +364,7 @@ const styles = StyleSheet.create({
 
   button_centrer: {
     position: 'absolute',
-    top: '1%',
+    top: '50%',
     left: '1.5%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
@@ -368,8 +373,8 @@ const styles = StyleSheet.create({
 
   button_appats: {
     position: 'absolute',
-    top: '1%',
-    left: '17%',
+    top: '42%',
+    left: '1.5%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
     borderRadius: 50,
@@ -377,8 +382,8 @@ const styles = StyleSheet.create({
 
   button_remove_all_markers: {
     position: 'absolute',
-    top: '1%',
-    left: '33%',
+    top: '58%',
+    left: '1.5%',
     backgroundColor: 'rgba(192, 248, 250, 1)',
     padding: 10,
     borderRadius: 50,
