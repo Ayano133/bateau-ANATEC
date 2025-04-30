@@ -50,7 +50,7 @@ par le serveur.
 | ---------------------------------------------------------------- | ------------------------------------------ |
 | • La connexion entre le système et l'appareil utilisateur.       | • fonctionnel                              |
 | • la distance maximale de connexion entre les deux appareils.    | • entre 30 et 50 mètres.                   |
-| • la précision des posisions du bateau.                          | • précis à environ 10 mètres.              |
+| • la précision des positions du bateau.                          | • précis à environ 10 mètres.              |
 | • l'envoi d'une notification pour annoncer le largage d'appâts.  | • fonctionnel.                             |
 | • le fonctionnement de chaque bouton.                            | • fonctionnel.                             |
 | • les demandes de permission d'accéder aux coordonnées.          | • fonctionnel.                             |
