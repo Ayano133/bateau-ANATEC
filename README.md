@@ -61,7 +61,7 @@ par le serveur.
 
 ``` typescript 
 
-  <TouchableOpacity style={styles.button_centrer} onPress={() => {                                                                                              ![Les boutons](https://github.com/user-attachments/assets/975dab08-5d41-42db-b08a-570c43c67693)
+  <TouchableOpacity style={styles.button_centrer} onPress={() => {
           if (location?.coords) {
             // Vérifie si mapRef.current est défini avant d'appeler animateToRegion
             if (mapRef.current) {
@@ -90,6 +90,7 @@ par le serveur.
         </TouchableOpacity>
 
 ```
+![Les boutons](https://github.com/user-attachments/assets/975dab08-5d41-42db-b08a-570c43c67693)
 
 ### Marquers et localisation de l'utilisateur:
 
