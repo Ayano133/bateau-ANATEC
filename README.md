@@ -130,7 +130,7 @@ par le serveur.
 cd /Users/matteo/Desktop/bateau-ANATEC/backend
 ```
 
-### Commande de lancement du serveur;
+### Commande de lancement du serveur:
 
 ```typesrcipt
 npm start
