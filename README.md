@@ -55,9 +55,9 @@ par le serveur.
 | • le fonctionnement de chaque bouton.                            | • fonctionnel.                             |
 | • les demandes de permission d'accéder aux coordonnées.          | • fonctionnel.                             |
 
-### Quelques exemples:
+# Quelques exemples:
 
-## Boutons:
+### Boutons:
 
 ``` typescript 
 
@@ -93,7 +93,7 @@ par le serveur.
 
 ![Les boutons](https://github.com/user-attachments/assets/975dab08-5d41-42db-b08a-570c43c67693)
 
-## Marquers et localisation de l'utilisateur:
+### Marquers et localisation de l'utilisateur:
 
 ``` typescript
 
