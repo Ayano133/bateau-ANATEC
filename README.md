@@ -95,7 +95,7 @@ par le serveur.
 
 ## Marquers et localisation de l'utilisateur:
 
-``` typrscript
+``` typescript
 
             <Marker
               coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
