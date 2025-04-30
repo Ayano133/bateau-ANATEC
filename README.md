@@ -16,7 +16,7 @@ quand lacher les appâts.
 ### L'application :
 
 En ouvrant l’application, l’utilisateur se trouve face à une carte, sur la carte se trouve deux markers ; un pour l’appareil
-de l’utilisateur et un autre pour le bateau. Chacun fonctionne en temps réel. En haut à gauche, se trouve trois boutons, le
+de l’utilisateur et un autre pour le bateau. Chacun fonctionne en temps réel. A gauche, se trouve trois boutons, le
 premier sert à recentrer la carte sur la position de l’utilisateur, le second bouton permet de largage des appâts et le dernier
 bouton supprime toutes les positions choisies. Les positions, elles, sont limitées à deux. Elles sont placées en cliquant sur la
 carte et peuvent êtres sélectionnées afin de les supprimer individuellement ou d’indiquer au bateau d’aller à ces coordonnées. 
@@ -27,7 +27,7 @@ L’application est développée sur le logiciel Visual Studio Code en utilisant
 de programmation. Un serveur Node créé avec le langage JavaScript depuis un ordinateur qui relie le système et l’appareil
 de l’utilisateur.
 
-L’application est découpée en deux parties : une partie sur l’appareil utilisateur qui reçoit les coordonnées
+L’application est découpée en deux parties : une partie sur l’appareil utilisateur qui reçoit les coordonnées                                                                                                                    &
 et qui permet d’envoyer un ordre pour lâcher les appâts. Une seconde partie qui envoie ses coordonnées grâce à un GPS et qui
 reçoit l’ordre de lâcher les appâts.
 
@@ -55,19 +55,39 @@ par le serveur.
 | • le fonctionnement de chaque bouton.                            | • fonctionnel.                             |
 | • les demandes de permission d'accéder aux coordonnées.          | • fonctionnel.                             |
 
-### Conclusion:
 ``` typescript 
-import { Stack } from "expo-router";
-import React from "react";
-import { Text } from "react-native";
 
+  <TouchableOpacity style={styles.button_centrer} onPress={() => {
+          if (location?.coords) {
+            // Vérifie si mapRef.current est défini avant d'appeler animateToRegion
+            if (mapRef.current) {
+              mapRef.current.animateToRegion({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.001,
+                longitudeDelta: 0.001,
+              }, 3000);
+            } else {
+              console.warn('mapRef.current is null');
+            }
+          } else {
+            console.warn('location or location.coords is undefined');
+          }
+        }}>
+          <Image source={require('@/images/Maps-Center-Direction-icon.png')} style={{ width: 35, height: 35,}} />
+        </TouchableOpacity>
 
-export default function RootLayout() {
-  return <Stack/>;
+        <TouchableOpacity style={styles.button_appats} onPress={AirdropAppat} >
+          <Image source={require('@/images/fish.png')} style={{ width: 35, height: 35,}} />
+        </TouchableOpacity>
 
-}
+        <TouchableOpacity style={styles.button_remove_all_markers} onPress={handleRemoveAllMarkers} >
+          <Image source={require('@/images/markers sup.png')} style={{ width: 35, height: 35,}} />
+        </TouchableOpacity>
 
 ```
+
+### Conclusion:
 
 
 
