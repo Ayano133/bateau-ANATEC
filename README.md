@@ -57,7 +57,7 @@ par le serveur.
 
 # Quelques exemples:
 
-### Boutons:
+## Boutons:
 
 ``` typescript 
 
@@ -92,7 +92,7 @@ par le serveur.
 ```
 ![Les boutons](https://github.com/user-attachments/assets/975dab08-5d41-42db-b08a-570c43c67693)
 
-### Marquers et localisation de l'utilisateur:
+## Marquers et localisation de l'utilisateur:
 
 ``` typescript
 
@@ -122,7 +122,20 @@ par le serveur.
 
 ![Markers et localistion](https://github.com/user-attachments/assets/00d524ed-2697-4685-90b7-0e5a5bc36cf9)
 
-### Le serveur:
+## Le serveur:
+
+### Dossier du serveur:
+
+```typescript
+cd /Users/matteo/Desktop/bateau-ANATEC/backend
+```
+
+### Commande de lancement du serveur;
+
+```typesrcipt
+npm start
+```
+
 ```typescript
 
 const express = require("express");
@@ -208,6 +221,7 @@ app.get("/airdrop-appat", (req, res) => {
 app.listen(port, () => console.log(`Serveur démarré sur le port ${port}`));
 
 ```
+<img width="566" alt="Capture d’écran 2025-04-30 à 10 36 28" src="https://github.com/user-attachments/assets/51eda477-956d-4154-b3df-b3a6ff6912ae" />
 
 ### Conclusion:
 
