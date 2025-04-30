@@ -98,7 +98,7 @@ par le serveur.
 
             <Marker
               coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-              title="Mattéo"
+              title="Utilisateur"
               description="HOME"
               pinColor='blue'
             />
