@@ -55,9 +55,9 @@ par le serveur.
 | • le fonctionnement de chaque bouton.                            | • fonctionnel.                             |
 | • les demandes de permission d'accéder aux coordonnées.          | • fonctionnel.                             |
 
-###Quelques exemples:
+### Quelques exemples:
 
-##Boutons:
+## Boutons:
 
 ``` typescript 
 
