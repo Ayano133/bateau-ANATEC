@@ -55,6 +55,10 @@ par le serveur.
 | • le fonctionnement de chaque bouton.                            | • fonctionnel.                             |
 | • les demandes de permission d'accéder aux coordonnées.          | • fonctionnel.                             |
 
+###Quelques exemples:
+
+##Boutons:
+
 ``` typescript 
 
   <TouchableOpacity style={styles.button_centrer} onPress={() => {
@@ -89,6 +93,33 @@ par le serveur.
 
 ![Les boutons](https://github.com/user-attachments/assets/975dab08-5d41-42db-b08a-570c43c67693)
 
+## Marquers et localisation de l'utilisateur:
+
+``` typrscript
+
+            <Marker
+              coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+              title="Mattéo"
+              description="HOME"
+              pinColor='blue'
+            />
+            {markers.map((marker, index) => (
+              <Marker
+                key={index}
+                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                title={`Position ${index + 1}`}
+                onPress={() => handleMarkerPress(marker)}
+              />
+            ))}
+            {otherPhoneLocation && (
+              <Marker
+                coordinate={{ latitude: otherPhoneLocation.latitude, longitude: otherPhoneLocation.longitude }}
+                title="Lucas"
+                pinColor="green"
+                description={`Latitude: ${otherPhoneLocation.latitude}, Longitude: ${otherPhoneLocation.longitude}`}
+              />
+
+```
 
 ### Conclusion:
 
