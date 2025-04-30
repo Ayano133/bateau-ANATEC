@@ -157,7 +157,7 @@ par le serveur.
 
 ```
 
-![Markers et localistion](https://github.com/user-attachments/assets/cfd80900-9a90-4435-8e06-2c53605c6a81)
+![Interaction marker](https://github.com/user-attachments/assets/2e17c7c9-37d2-409a-8152-bfa0dcff5a13)
 
 
 
