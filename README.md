@@ -86,6 +86,7 @@ par le serveur.
         </TouchableOpacity>
 
 ```
+https://cdn.discordapp.com/attachments/1367045498195939351/1367045549060128899/Screenshot_20250430-0933552.png?ex=681327e1&is=6811d661&hm=7cc5be98797722f84742831ca0e0ed251eace24cf8119c18ca8f42878794bf7a&
 
 ### Conclusion:
 
