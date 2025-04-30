@@ -174,6 +174,7 @@ cd /Users/matteo/Desktop/bateau-ANATEC/backend
 ```typesrcipt
 npm start
 ```
+### Structure du serveur:
 
 ```typescript
 
