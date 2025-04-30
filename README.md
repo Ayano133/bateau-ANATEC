@@ -121,6 +121,9 @@ par le serveur.
 
 ```
 
+![Markers et localistion](https://github.com/user-attachments/assets/00d524ed-2697-4685-90b7-0e5a5bc36cf9)
+
+
 ### Conclusion:
 
 
