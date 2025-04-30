@@ -122,6 +122,43 @@ par le serveur.
 
 ![Markers et localistion](https://github.com/user-attachments/assets/00d524ed-2697-4685-90b7-0e5a5bc36cf9)
 
+## Interaction marquers:
+
+```typescript
+
+        {selectedMarker && (
+          <View style={styles.rectangle}>
+            <View style={styles.rectangle_head}>
+              <Text style={styles.head_titre}>{selectedMarker.title}</Text>
+              <TouchableOpacity style={styles.button_fermer} onPress={handleRemoveRectangle}>
+                <Text style={styles.button_fermer_texte}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.rectangle_gps}>
+              <Text style={styles.text_titre_gps}>Latitude:</Text>
+              <Text style={styles.coordonnées}>{selectedMarker.latitude}</Text>
+              <Text style={styles.text_titre_gps}>Longitude:</Text>
+              <Text style={styles.coordonnées}>{selectedMarker.longitude}</Text>
+            </View>
+
+            <View style={styles.rectangle_button}>
+              <TouchableOpacity style={styles.button_sup} onPress={handleRemoveMarker}>
+                <Text style={styles.button_sup_texte}>Supprimer</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.button_ALLER} onPress={handleGoToPosition}>
+                <Text style={styles.button_ALLER_texte}>Aller à la position</Text>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+        )}
+
+```
+
+
+
 ## Le serveur:
 
 ### Dossier du serveur:
