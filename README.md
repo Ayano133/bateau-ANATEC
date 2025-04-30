@@ -157,6 +157,8 @@ par le serveur.
 
 ```
 
+![Markers et localistion](https://github.com/user-attachments/assets/cfd80900-9a90-4435-8e06-2c53605c6a81)
+
 
 
 ## Le serveur:
