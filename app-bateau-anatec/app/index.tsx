@@ -31,7 +31,43 @@ const App = () => {
       fetchOtherPhoneLocation();
 
       const intervalId = setInterval(fetchOtherPhoneLocation, 5000); // Fetch the other phone's location every 5 seconds
-      navigation.setOptions({ headerShown: false });
+      navigation.setOptions({ 
+        headerShown: true,
+        headerStyle: { 
+          backgroundColor: 'rgba(192, 248, 250, 1)',
+        },
+        headerTitle: () => (
+          <View style={{ height: 95, width: 390, backgroundColor: 'rgba(192, 248, 250, 1)', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'column', marginBottom: 20}}>
+              <Text style={{
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: 25,
+                marginTop: 26,
+                paddingLeft: 10,
+              }}>
+                Bateau-Anatec
+              </Text>
+
+              <Text style={{
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: 15,
+                marginTop: 5,
+                paddingLeft: 11,
+                }}>
+                Utilisateur : Mattéo
+              </Text>
+            </View>
+
+            <View style={{ marginRight: 15, marginTop: 20, marginBottom: 20 }}>
+              <Image source={require('@/images/bateau.png')} style={{ width: 80, height: 80,}} />
+            </View>
+                
+
+          </View>
+        ),
+      });
 
       return () => clearInterval(intervalId);
     };
@@ -56,7 +92,7 @@ const App = () => {
           setServerIp(ip);
         } else {
           console.warn('Adresse IP non trouvée, utilisation de l\'adresse IP de secours.');
-          setServerIp('172.20.10.2'); // Adresse IP de secours
+          setServerIp('10.67.213.18'); // Adresse IP de secours
         }
       } else {
         console.warn('Pas de connexion réseau détectée.');
