@@ -263,8 +263,6 @@ app.listen(port, () => console.log(`Serveur démarré sur le port ${port}`));
 ```
 <img width="566" alt="Capture d’écran 2025-04-30 à 10 36 28" src="https://github.com/user-attachments/assets/51eda477-956d-4154-b3df-b3a6ff6912ae" />
 
-### Conclusion:
-
 
 
 
