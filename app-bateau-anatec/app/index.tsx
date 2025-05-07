@@ -4,32 +4,69 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { initDatabase, saveLocation, fetchLocations } from '@/app/database';
 import { requestLocationPermission, getCurrentLocation } from '@/app/location';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Platform } from 'react-native';
 import { rgbaColor } from 'react-native-reanimated/lib/typescript/Colors';
+import * as Network from 'expo-network'; // Import expo-network
 
 const App = () => {
   const [location, setLocation] = useState<{ coords: { latitude: number; longitude: number } } | null>(null);
   const [markers, setMarkers] = useState<{ latitude: number; longitude: number; title?: string }[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<{ latitude: number; longitude: number; title?: string } | null>(null);
   const [otherPhoneLocation, setOtherPhoneLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [serverIp, setServerIp] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
   const previousLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
   const navigation = useNavigation();
 
   useEffect(() => {
-    initDatabase();
+    const initializeApp = async () => {
+      await fetchIp(); // Assurez-vous que l'IP est récupérée avant de continuer
+      if (!serverIp) {
+        console.warn('Impossible de continuer sans adresse IP.');
+        return;
+      }
 
-    initLocation();
+      initDatabase();
+      await initLocation();
+      fetchOtherPhoneLocation();
 
-    fetchOtherPhoneLocation();// Fetch the other phone's location // enlever le await
-     
-    const intervalId = setInterval(fetchOtherPhoneLocation, 5000);// Fetch the other phone's location every 5 seconds
+      const intervalId = setInterval(fetchOtherPhoneLocation, 5000); // Fetch the other phone's location every 5 seconds
+      navigation.setOptions({ headerShown: false });
 
-    navigation.setOptions({ headerShown: false });
+      return () => clearInterval(intervalId);
+    };
 
-    return () => clearInterval(intervalId);
+    initializeApp();
+  }, [navigation, serverIp]);
 
-  }, [navigation]);
+  const fetchIp = async () => {
+    try {
+      const networkState = await Network.getNetworkStateAsync();
+      if (networkState.isConnected) {
+        let ip = networkState.ipAddress;
+
+        // If ipAddress is undefined, try to get it from networkInfo
+        if (!ip && networkState.networkInfo) {
+          // @ts-ignore
+          ip = networkState.networkInfo.ipAddress;
+        }
+
+        if (ip) {
+          console.log('Adresse IP du serveur:', ip);
+          setServerIp(ip);
+        } else {
+          console.warn('Adresse IP non trouvée, utilisation de l\'adresse IP de secours.');
+          setServerIp('172.20.10.2'); // Adresse IP de secours
+        }
+      } else {
+        console.warn('Pas de connexion réseau détectée.');
+        setServerIp(null); // Ensure serverIp is null if no connection
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'adresse IP:', error);
+      setServerIp(null); // Ensure serverIp is null on error
+    }
+  };
 
   const initLocation = async () => {
     try {
@@ -39,7 +76,7 @@ const App = () => {
       await saveLocation(currentLocation.coords.latitude, currentLocation.coords.longitude);
 
       const savedLocations = await fetchLocations();
-      console.log('Positions enregistrées:', savedLocations);
+      // console.log('Positions enregistrées:', savedLocations);
 
     } catch (error) {
       console.error('Erreur:', error);
@@ -48,7 +85,11 @@ const App = () => {
 
   const fetchOtherPhoneLocation = async () => {
     try {
-      const response = await fetch('http://172.20.10.2:3001/location'); // Replace with your server's IP
+      if (!serverIp) {
+        console.warn('Adresse IP du serveur non définie.');
+        return;
+      }
+      const response = await fetch(`http://${serverIp}:3001/location`);
       if (response.ok) {
         const data = await response.json();
         const newLocation = { latitude: data.latitude, longitude: data.longitude };
@@ -62,7 +103,7 @@ const App = () => {
             Math.abs(newLocation.longitude - previousLocation.longitude) > tolerance) {
           setOtherPhoneLocation(newLocation);
           previousLocationRef.current = newLocation; // Update the ref with the new location
-          console.log('Localisation de l\'autre téléphone:', data);
+          // console.log('Localisation de l\'autre téléphone:', data);
         } else {
           
         }
@@ -106,9 +147,9 @@ const App = () => {
   };
 
   const handleGoToPosition = async () => {
-    if (selectedMarker) {
+    if (selectedMarker && serverIp) {
       try {
-        const response = await fetch('http://172.20.10.2:3001/set-location', { // Remplace avec l'adresse IP de ton serveur
+        const response = await fetch(`http://${serverIp}:3001/set-location`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -131,26 +172,30 @@ const App = () => {
     }
   };
   const AirdropAppat = async () => {
-      try {
-        const response = await fetch('http://172.20.10.2:3001/airdrop-appat', { // Remplace avec l'adresse IP de ton serveur
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: 'Lache les appats'
-          }),
-        });
+    try {
+      if (!serverIp) {
+        console.warn('Adresse IP du serveur non définie.');
+        return;
+      }
+      const response = await fetch(`http://${serverIp}:3001/airdrop-appat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'Lache les appats'
+        }),
+      });
 
-        if (response.ok) {
-          console.log('Alert envoyée au serveur avec succès !');
-          await fetchOtherPhoneLocation(); // Fetch the other phone's location immediately
-        } else {
-          console.error('Échec de l\'envoi de l\'alert au serveur.');
-        }
-      } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'alert au serveur:', error); 
-  }
+      if (response.ok) {
+        console.log('Alert envoyée au serveur avec succès !');
+        await fetchOtherPhoneLocation(); // Fetch the other phone's location immediately
+      } else {
+        console.error('Échec de l\'envoi de l\'alert au serveur.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'alert au serveur:', error); 
+    }
   };
 
   const handleRemoveAllMarkers = () => {

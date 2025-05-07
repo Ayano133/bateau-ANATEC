@@ -9,6 +9,8 @@ export const requestLocationPermission = async () => {
 
 export const getCurrentLocation = async () => {
   let location = await Location.getCurrentPositionAsync({});
+  // Vérifiez si un log est ici
+  console.log('Position actuelle:', location.coords.latitude, location.coords.longitude);
   return location;
 };
 

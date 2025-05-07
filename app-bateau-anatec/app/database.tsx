@@ -40,7 +40,7 @@ export const fetchLocations = async () : Promise<any[]> => {
 
   const allRows = await db.getAllAsync('SELECT * FROM locations;');
   for (const row of allRows) {
-    console.log(row.id, row.latitude, row.longitude);
+    // console.log(row.id, row.latitude, row.longitude);
   }
   return allRows; 
 }; 
