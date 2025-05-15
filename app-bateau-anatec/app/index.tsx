@@ -92,7 +92,7 @@ const App = () => {
           setServerIp(ip);
         } else {
           console.warn('Adresse IP non trouvée, utilisation de l\'adresse IP de secours.');
-          setServerIp('10.67.213.18'); // Adresse IP de secours
+          setServerIp('172.20.10.2'); // Adresse IP de secours
         }
       } else {
         console.warn('Pas de connexion réseau détectée.');
