@@ -1,9 +1,7 @@
-import { Stack } from "expo-router";
-import React from "react";
-import { Text } from "react-native";
+import { Stack } from 'expo-router';
 
-
-export default function RootLayout() {
-  return <Stack/>;
-
+export default function Layout() {
+  return (
+    <Stack/>
+  );
 }
