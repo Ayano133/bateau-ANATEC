@@ -21,7 +21,7 @@
     "@react-navigation/native": "^7.0.14",
     "cors": "^2.8.5",
     "eas-cli": "^16.6.1",
-    "expo": "^53.0.0",
+    "expo": "^53.0.9",
     "expo-blur": "~14.1.4",
     "expo-constants": "~17.1.6",
     "expo-dev-client": "~5.1.8",
