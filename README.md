@@ -1,3 +1,8 @@
+## Binome :
+
+- PEREIRA DA SILVA RODRIGUES Mattéo (Github : Ayano133)
+- RENTE--PINTO Lucas (Github : hazel58)
+
 # Les installations prérequis !!!
 
 ## Expo:
@@ -69,11 +74,6 @@ npm start
 ou
 node "nom de votre fichier qui contient le node".js
 ```
-
-## Binome :
-
-- PEREIRA DA SILVA RODRIGUES Mattéo (Github : Ayano133)
-- RENTE--PINTO Lucas (Github : hazel58)
 
 
 # <ins>Compte rendu:</ins>
