@@ -15,6 +15,20 @@ npx expo start //Permet d'exécuter votre projet expo
 ```
 ### Bonus
 Si vous voulez voir les modules que possède le framework expo ou avoir un guide bien détaillé pour débuter votre projet expo, aller sur le site suivant: https://docs.expo.dev
+Dans mon cas, j'ai installé:
+```typescript
+npx expo install expo-sqlite //Permet d'utiliser une base de données SQLite.
+
+npx expo install expo-location //Donne accès aux services de localisation.
+
+npx expo install expo-network //Fournit des informations sur l'état du réseau.
+
+npx expo install expo-router //Un routeur pour Expo.
+
+npx expo install expo-status-bar //Permet de contrôler la barre d'état.
+
+npx expo install expo-system-ui //Permet de personnaliser l'interface utilisateur du système.
+```
 
 ## React-Natif
 ### Installation
@@ -22,7 +36,7 @@ Si vous voulez voir les modules que possède le framework expo ou avoir un guide
 npm install -g react-native-cli
 ```
 ### Modules
-Dans mon casse sont :
+Dans mon cas, j'ai installé:
 ```typescript
 npm install react-native-wifi-reborn //Permet d'interagir avec le Wi-Fi.
 
