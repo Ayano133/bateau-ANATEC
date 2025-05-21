@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 
 let otherPhoneLocation = null;
 let markerLocation = null; // Ajout de la variable pour stocker la position du marker
+let appatMessage = null; // Déclaration de la variable appatMessage
 
 app.get("/post", (req, res) => {
   res.json({ message: "Voici les données" });
