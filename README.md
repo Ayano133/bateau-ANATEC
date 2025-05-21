@@ -3,10 +3,37 @@
 ## Expo:
 ### Installation
 ```typescript
-npx create-expo-app@latest
+npm expo insatll //Installer le framework expo
+
+npx create-expo-app@latest //Création de votre projet
+
+npx expo prebuild //Pour mettre votre en natif (vous obtener deux dossier : ios et android)
 ```
+### Exécuter
+```typescript
+npx expo start //Permet d'exécuter votre projet expo
+```
+### Bonus
+Si vous voulez voir les modules que possède le framework expo ou avoir un guide bien détaillé pour débuter votre projet expo, aller sur le site suivant: https://docs.expo.dev
 
+## Node: (Dans un nouveau dossier)
+### Installaion
+Il faut d'avord installer node sur votre machine: https://nodejs.org/
+Ensuite le mettre sur votre projet
+```typescript
 
+```
+## Packages
+Dans mon cas j'ai installé express:
+```typsript
+npm install express
+```
+## Exécuter
+```typesript
+npm start
+ou
+node "nom de votre fichier qui contient le node".js
+```
 
 ## Binome :
 
