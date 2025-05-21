@@ -1,3 +1,13 @@
+# Les installations prérequis !!!
+
+## Expo:
+### Installation
+```typescript
+npx create-expo-app@latest
+```
+
+
+
 ## Binome :
 
 - PEREIRA DA SILVA RODRIGUES Mattéo (Github : Ayano133)
