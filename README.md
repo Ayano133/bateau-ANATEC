@@ -16,12 +16,33 @@ npx expo start //Permet d'exécuter votre projet expo
 ### Bonus
 Si vous voulez voir les modules que possède le framework expo ou avoir un guide bien détaillé pour débuter votre projet expo, aller sur le site suivant: https://docs.expo.dev
 
+## React-Natif
+### Installation
+```typescript
+npm install -g react-native-cli
+```
+### Modules
+Dans mon casse sont :
+```typescript
+npm install react-native-wifi-reborn //Permet d'interagir avec le Wi-Fi.
+
+npm react-native-device-info //Permet d'accéder aux informations de l'appareil.
+
+npm react-native-geolocation-service //Fournit des fonctionnalités de géolocalisation.
+
+npm react-native-maps //Permet d'intégrer des cartes dans ton application.
+
+npm react-native-gesture-handler //Gère les interactions tactiles et les gestes.
+
+npm react-native-screens //Optimise la navigation entre les écrans.
+```
+
 ## Node: (Dans un nouveau dossier)
-### Installaion
+### Installation
 Il faut d'avord installer node sur votre machine: https://nodejs.org/
 Ensuite le mettre sur votre projet
 ```typescript
-
+npm init -y
 ```
 ## Packages
 Dans mon cas j'ai installé express:
