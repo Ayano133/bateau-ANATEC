@@ -7,7 +7,7 @@ npm expo insatll //Installer le framework expo
 
 npx create-expo-app@latest //Création de votre projet
 
-npx expo prebuild //Pour mettre votre en natif (vous obtener deux dossier : ios et android)
+npx expo prebuild //Pour mettre votre projet en natif (vous obtener deux dossier : ios et android)
 ```
 ### Exécuter
 ```typescript
